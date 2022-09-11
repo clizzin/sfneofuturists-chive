@@ -1,0 +1,14 @@
+branding:
+  name: Chive
+  prettyName: Chive
+  org: SF Neo-Futurists
+  icon: /assets/images/sfnf-logo-great-show.png
+
+landing:
+  modules:
+    - tag: active
+      label: Active Ensemble
+      style: docs
+    - tag: featured
+      label: Frequently Used
+      style: docs
