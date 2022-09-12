@@ -182,8 +182,21 @@ function fetchByline(html, creatorOfDoc) {
       $(p).remove()
     }
 
-    // only check the first p tag
-    return false
+    // custom code added for SF Neo-Futurists
+    // Set byline based on copyright line.
+    let s = p.children[0].data
+    if (/©/.test(s)) {
+      s = s.replace('©', '')   // cut out the copyright symbol
+      s = s.replace(',', '')   // some people include commas
+      s = s.replace(/\d+/, '') // cut out the year
+      s = s.trim()             // cut out surrounding whitespace
+      byline = s;
+    }
+
+    // custom code added for SF Neo-Futurists
+    // Check more than the first p tag since the copyright line is often not
+    // the first line.
+    if (index == 2) return false
   })
 
   return {
