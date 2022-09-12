@@ -1,0 +1,17 @@
+// Don't take up extra vertical space.
+.tagline {
+  display: none;
+}
+
+// Reduce space between logo and heading.
+#main-search-page .main-item .branding .branding-label {
+  padding-left: 0;
+}
+#main-search-page .main-item .branding .branding-label {
+  border-left: none;
+}
+
+// Don't invert colors of logo in header.
+.masthead .container .branding .branding-heading .logo {
+  filter: none;
+}
