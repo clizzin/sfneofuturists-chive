@@ -5,6 +5,8 @@ branding:
   icon: /assets/images/sfnf-logo-great-show.png
 
 landing:
+  tagline:
+  quickLink:
   modules:
     - tag: active
       label: Active Ensemble
