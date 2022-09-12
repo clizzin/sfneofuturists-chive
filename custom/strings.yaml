@@ -8,9 +8,9 @@ landing:
   tagline:
   quickLink:
   modules:
+    - tag: featured
+      label: Useful Docs
+      style: docs
     - tag: active
       label: Active Ensemble
-      style: docs
-    - tag: featured
-      label: Frequently Used
       style: docs
