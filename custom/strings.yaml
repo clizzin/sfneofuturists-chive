@@ -14,3 +14,6 @@ landing:
     - tag: active
       label: Active Ensemble
       style: docs
+
+footer:
+  helpText:
