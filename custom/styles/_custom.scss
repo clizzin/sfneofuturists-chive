@@ -15,3 +15,17 @@
 .masthead .container .branding .branding-heading .logo {
   filter: none;
 }
+
+// Increase width to make plays more readable.
+.g-upper-body {
+  max-width: 800px;
+}
+.g-body {
+  .playlist-navigation,
+  .g-main-content {
+    max-width: 800px;
+  }
+  .g-footer {
+    max-width: 800px;
+  }
+}
