@@ -14,6 +14,9 @@ landing:
     - tag: active
       label: Active Ensemble
       style: docs
+    - tag: alum
+      label: Alums
+      style: docs
 
 footer:
   helpText:
