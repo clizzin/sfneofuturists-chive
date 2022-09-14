@@ -21,10 +21,17 @@
   max-width: 800px;
 }
 .g-body {
+  .g-left-panel {
+    @media (min-width: 1175px) {
+      width: 200px;
+    }
+  }
+
   .playlist-navigation,
   .g-main-content {
     max-width: 800px;
   }
+
   .g-footer {
     max-width: 800px;
   }
