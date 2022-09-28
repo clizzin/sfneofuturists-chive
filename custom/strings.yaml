@@ -17,6 +17,9 @@ landing:
     - tag: alum
       label: Alums
       style: docs
+    - tag: committee
+      label: Committees
+      style: docs
 
 footer:
   helpText:
