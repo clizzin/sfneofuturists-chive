@@ -44,7 +44,7 @@ function normalizeHtml(html) {
   // empty element inside it. Do this at the 
   $('p').each((idx, el) => {
     if (el.children.length === 1 && el.children[0].tagName === 'span' && el.text() === '') {
-      $(el).remove();
+      $(el.children[0]).remove();
     }
   });
 
