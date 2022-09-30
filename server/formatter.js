@@ -41,7 +41,7 @@ function normalizeHtml(html) {
   // custom code added for SF Neo-Futurists
   // If there's a <p> containing nothing but a <span> with no text, delete the <span>. The stylesheet has
   // rules that are meant to let an empty paragraph take up space, but that doesn't work if it has another
-  // empty element inside it. Do this at the 
+  // empty element inside it.
   $('p').each((idx, el) => {
     if (el.children.length === 1 && el.children[0].tagName === 'span' && el.text() === '') {
       $(el.children[0]).remove();
