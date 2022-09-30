@@ -190,6 +190,7 @@ function fetchByline(html, creatorOfDoc) {
       s = s.replace(',', '')   // some people include commas
       s = s.replace(/\d+/, '') // cut out the year
       s = s.trim()             // cut out surrounding whitespace
+      s = s.replace(/^by /, '') // they might have written "Name" or "by Name"
       byline = s;
     }
 
