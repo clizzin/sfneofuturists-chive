@@ -14,11 +14,9 @@ try {
 // load the normal pkg json
 const pkg = require(pkgPath)
 
-const {dotenv} = pkg.devDependencies
-
-// update the start config to use .env, add as normal dep
+// update the start config to use .env
 pkg.scripts.start = `node -r dotenv/config server/index`
-pkg.dependencies = Object.assign({}, pkg.dependencies, {dotenv}, customPkg.dependencies)
+pkg.dependencies = Object.assign({}, pkg.dependencies, customPkg.dependencies)
 
 // write the updates package.json to disk
 fs.writeFileSync(pkgPath, JSON.stringify(pkg, null, 4))
