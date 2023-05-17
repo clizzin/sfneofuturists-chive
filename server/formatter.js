@@ -43,7 +43,7 @@ function normalizeHtml(html) {
   // rules that are meant to let an empty paragraph take up space, but that doesn't work if it has another
   // empty element inside it.
   $('p').each((idx, el) => {
-    if (el.children.length === 1 && el.children[0].tagName === 'span' && el.text() === '') {
+    if (el.children.length === 1 && el.children[0].tagName === 'span' && el.children[0].textContent === '') {
       $(el.children[0]).remove();
     }
   });
