@@ -36,6 +36,13 @@ app.get('/healthcheck', (req, res) => {
   res.send('OK')
 })
 
+// Handle warmup requests in a bare-minimum fashion
+// Could also use this hook to start up middleware etc, but not worth it for our use case
+// https://cloud.google.com/appengine/docs/standard/configuring-warmup-requests?tab=node.js
+app.get('/_ah/warmup', (req, res) => {
+  res.send('OK')
+});
+
 app.use(csp({directives: customCsp}))
 app.use(userAuth)
 

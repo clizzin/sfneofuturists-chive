@@ -3,10 +3,27 @@
 # Note: Library currently does not run under Node.js 20, will need to pull
 #       changes from upstream closer to v18 EOL
 runtime: nodejs18
-instance_class: F4
+
+# Capability table: https://cloud.google.com/appengine/docs/standard#instance_classes
+# Cost table: https://cloud.google.com/appengine/pricing (go to us-west4)
+# F1: 384MB mem / 600MHz CPU / supports automatic scaling / $0.055/hr
+instance_class: F1
+
+automatic_scaling:
+  # default 0.6; attempt to avoid spurious creation of extra instances
+  target_cpu_utilization: 0.8
+  target_throughput_utilization: 0.8
+  # ensures at least one instance is always running, to avoid a ~30sec startup penalty
+  # note: does not apply in staging (version must be configured to receive traffic)
+  # https://cloud.google.com/appengine/docs/standard/reference/app-yaml?tab=node.js#scaling_elements
+  min_instances: 1
 
 handlers:
 - url: /.*
   secure: always
   redirect_http_response_code: 301
   script: auto
+
+inbound_services:
+# required for min_instances to work
+- warmup
