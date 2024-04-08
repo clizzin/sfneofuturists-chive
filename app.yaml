@@ -1,4 +1,8 @@
-runtime: nodejs16
+# Node.js 18 is EOL on April 30, 2025
+# https://github.com/nodejs/release#release-schedule
+# Note: Library currently does not run under Node.js 20, will need to pull
+#       changes from upstream closer to v18 EOL
+runtime: nodejs18
 instance_class: F4
 
 handlers:
