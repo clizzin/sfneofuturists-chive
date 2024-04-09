@@ -1,6 +1,56 @@
 Library [![Build Status](https://cloud.drone.io/api/badges/nytimes/library/status.svg)](https://cloud.drone.io/nytimes/library) ![Supported node versions](https://img.shields.io/badge/dynamic/json?color=informational&label=node&query=%24.engines.node&url=https%3A%2F%2Fraw.githubusercontent.com%2Fnytimes%2Flibrary%2Fmain%2Fpackage.json)
 ========
 
+# SFNF Quickstart
+
+## Deploy commands
+Deploy to production: `gcloud app deploy --project sfneofuturists-chive`
+
+Deploy to staging (also see https://cloud.google.com/appengine/docs/flexible/testing-and-deploying-your-app?tab=node.js): `gcloud app deploy --no-promote --project sfneofuturists-chive --version staging`
+
+## Using the staging environment
+Always try out changes in the staging environment first!
+
+Staging URL: https://staging-dot-sfneofuturists-chive.wn.r.appspot.com/
+
+You can temporarily route traffic through the main chive URL to staging in [Versions](https://console.cloud.google.com/appengine/versions) -> Migrate Traffic
+
+## Secrets, secrets
+.env file template:
+```bash
+# node environment (development or production)
+NODE_ENV=production
+# Google oAuth credentials
+GOOGLE_CLIENT_ID=962567839872-4c94dhvchhtnpf5ajedc6p1nuboqeimq.apps.googleusercontent.com
+# retrieve this from Cloud Console (APIs & Services -> Credentials -> sfneofuturists-chive -> download JSON secret)
+GOOGLE_CLIENT_SECRET=REPLACEME
+GCP_PROJECT_ID=sfneofuturists-chive
+# allow-list of fully-qualified email addresses or domains
+# we might want to improve access on this at some point, pretty sure right now anyone can access chive?
+# no real reason to limit to just gmail/hotmail either
+APPROVED_DOMAINS="gmail.com,hotmail.com"
+# Generate a random string for this; ideally we would sync it between everyone who deploys, but not sure how much it matters
+SESSION_SECRET=REPLACEME
+
+# team or folder (we're not using GSuite, so has to be folder)
+DRIVE_TYPE=folder
+# the ID of your team's drive or shared folder. The string of random numbers and letters at the end of your team drive or folder url.
+DRIVE_ID=1w5VMeTMwG5mC3apzYqM6C9JRelBhqUwO
+
+# download a new version of .auth.json from Cloud Console and place it in your copy of the repo
+# (APIs & Services -> Credentials -> sfneofuturists-chive@sfneofuturists-chive.iam.gserviceaccount.com ->
+#  Keys -> Add Key -> Create new key)
+# note: no need to change this line, it just has to not be "parse_json" to make it look for the file
+GOOGLE_APPLICATION_CREDENTIALS=.auth.json
+
+# alternative: uncomment these 2 lines, download .auth.json as above, and paste its contents here instead
+# also need to remove the other GOOGLE_APPLICATION_CREDENTIALS line
+# GOOGLE_APPLICATION_CREDENTIALS=parse_json
+# GOOGLE_APPLICATION_JSON=PASTE_RAW_JSON_HERE
+```
+
+# Original NYT Documentation
+
 A collaborative newsroom documentation site, powered by Google Docs.
 
 <!-- START doctoc generated TOC please keep comment here to allow auto update -->
