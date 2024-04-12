@@ -29,8 +29,12 @@ GCP_PROJECT_ID=sfneofuturists-chive
 # we might want to improve access on this at some point, pretty sure right now anyone can access chive?
 # no real reason to limit to just gmail/hotmail either
 APPROVED_DOMAINS="gmail.com,hotmail.com"
-# Generate a random string for this; ideally we would sync it between everyone who deploys, but not sure how much it matters
+# Generate a random string for this; if this changes between deploys, users will have to log in again
 SESSION_SECRET=REPLACEME
+# needed in order to generate an HTTPS OAuth2 callback URL in userAuth.js
+# Google App Engine is behind an nginx reverse proxy: https://issuetracker.google.com/issues/70018870#comment2
+# Also see https://expressjs.com/en/guide/behind-proxies.html
+TRUST_PROXY=true
 
 # team or folder (we're not using GSuite, so has to be folder)
 DRIVE_TYPE=folder
