@@ -12,9 +12,6 @@
     <div id="main-search-page">
       <div class="main-item">
         <%- include('partials/branding', {context: 'home'}) %>
-        <div class="tagline">
-          <p><%- template('landing.tagline') %> <%- template('landing.quickLink') %></p>
-        </div>
         <%- include('partials/search', {style: 'homepage', focus: 'autofocus', msgOnFocus: template('search.placeholder')}) %>
 
         <div class="featured-cat">
