@@ -14,6 +14,8 @@ const log = require('../server/logger')
 const router = require('express-promise-router')()
 const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
 
+const axios = require('axios')
+
 const callbackURL = process.env.REDIRECT_URL || '/auth/redirect'
 const GOOGLE_AUTH_STRATEGY = 'google'
 
@@ -50,7 +52,34 @@ getAuth().then(({email, key}) => {
 
   // seralize/deseralization methods for extracting user information from the
   // session cookie and adding it to the req.passport object
-  passport.serializeUser((user, done) => done(null, user))
+
+  // serialize is called when the user first authenticates
+  // Use this callback as an opportunity to check their email against the chive permissions list
+  // and attach an "authorized" flag to their PassportJS object
+  passport.serializeUser(async (user, done) => {
+    user.authorized = false;
+
+    // magic Google Apps Script; takes a "user" parameter in a GET request and returns a JSON object with an "authorized" key
+    const authUrl = "https://script.google.com/macros/s/AKfycby3zj7uw2ZHi6JUcCt8aaRoE3Z8lUo3uKojxGXXIgeCoJ9h78CvXGJasUl--t23JfxB/exec"
+
+    try {
+      // TODO: Technically there could be more than one email attached to a profile - should we send all of them?
+      var authResp = await axios.get(authUrl, {params: {user: user.emails[0].value}})
+
+      if (authResp.data.authorized) {
+        user.authorized = true;
+      }
+    } catch (e) {
+      console.log(e)
+    }
+
+    // save the user object and finish serializing it
+    done(null, user)
+  })
+
+  // deserialize is called anytime the user loads a new page; no need to re-check authorization
+  // However, if user is added to permissions list *after* they first log in, they will need to re-log-in
+  // by visiting /login or /logout
   passport.deserializeUser((obj, done) => done(null, obj))
 
   const googleLoginOptions = {
@@ -90,15 +119,7 @@ getAuth().then(({email, key}) => {
   })
 
   function isAuthorized(user) {
-    const [{value: userEmail = ''} = {}] = user.emails || []
-    const [userDomain] = userEmail.split('@').slice(-1)
-    const checkRegexEmail = () => {
-      const domainsArray = Array.from(domains)
-      for (const domain of domainsArray) {
-        if (userDomain.match(domain)) return true
-      }
-    }
-    return domains.has(userDomain) || domains.has(userEmail) || checkRegexEmail()
+    return user.authorized
   }
 
   function setUserInfo(req) {
