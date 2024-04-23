@@ -12,7 +12,6 @@ const {getAuth} = require('../server/auth')
 const log = require('../server/logger')
 
 const router = require('express-promise-router')()
-const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
 
 const axios = require('axios')
 
@@ -70,7 +69,7 @@ getAuth().then(({email, key}) => {
         user.authorized = true;
       }
     } catch (e) {
-      console.log(e)
+      log.error(e)
     }
 
     // save the user object and finish serializing it
@@ -78,8 +77,11 @@ getAuth().then(({email, key}) => {
   })
 
   // deserialize is called anytime the user loads a new page; no need to re-check authorization
-  // However, if user is added to permissions list *after* they first log in, they will need to re-log-in
-  // by visiting /login or /logout
+  // Pitfall #1: If user is added to permissions list *after* they first log in, they will need to re-log-in
+  //             by visiting /login or /logout
+  // Pitfall #2: Removing a user from the GDrive permissions list will not revoke access to this site, unless
+  //             the session secret is changed (globally invalidating all user sessions)
+  // TODO: store login timestamp and force re-auth after X days so that access can be revoked
   passport.deserializeUser((obj, done) => done(null, obj))
 
   const googleLoginOptions = {

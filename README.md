@@ -25,16 +25,14 @@ GOOGLE_CLIENT_ID=962567839872-4c94dhvchhtnpf5ajedc6p1nuboqeimq.apps.googleuserco
 # retrieve this from Cloud Console (APIs & Services -> Credentials -> sfneofuturists-chive -> download JSON secret)
 GOOGLE_CLIENT_SECRET=REPLACEME
 GCP_PROJECT_ID=sfneofuturists-chive
-# allow-list of fully-qualified email addresses or domains
-# we might want to improve access on this at some point, pretty sure right now anyone can access chive?
-# no real reason to limit to just gmail/hotmail either
-APPROVED_DOMAINS="gmail.com,hotmail.com"
 # Generate a random string for this; if this changes between deploys, users will have to log in again
 SESSION_SECRET=REPLACEME
 # needed in order to generate an HTTPS OAuth2 callback URL in userAuth.js
 # Google App Engine is behind an nginx reverse proxy: https://issuetracker.google.com/issues/70018870#comment2
 # Also see https://expressjs.com/en/guide/behind-proxies.html
 TRUST_PROXY=true
+
+# NB: APPROVED_DOMAINS not needed for our version of the project
 
 # team or folder (we're not using GSuite, so has to be folder)
 DRIVE_TYPE=folder
