@@ -59,11 +59,14 @@ getAuth().then(({email, key}) => {
     user.authorized = false;
 
     // magic Google Apps Script; takes a "user" parameter in a GET request and returns a JSON object with an "authorized" key
-    const authUrl = "https://script.google.com/macros/s/AKfycby3zj7uw2ZHi6JUcCt8aaRoE3Z8lUo3uKojxGXXIgeCoJ9h78CvXGJasUl--t23JfxB/exec"
+    const authUrl = "https://script.google.com/macros/s/AKfycbz26HBXVgvkt2NGam-WmN5s46hoodXii4J6b0BSjRV3j5oJhOMPgrLgth-9SasctQ2s/exec"
 
     try {
-      // TODO: Technically there could be more than one email attached to a profile - should we send all of them?
-      var authResp = await axios.get(authUrl, {params: {user: user.emails[0].value}})
+      var emails = []
+      for (email of user.emails) {
+        emails.push(email.value)
+      }
+      var authResp = await axios.get(authUrl, {params: {user: emails}})
 
       if (authResp.data.authorized) {
         user.authorized = true;
