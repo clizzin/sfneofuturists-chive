@@ -13,8 +13,6 @@ const log = require('../server/logger')
 
 const router = require('express-promise-router')()
 
-const axios = require('axios')
-
 const callbackURL = process.env.REDIRECT_URL || '/auth/redirect'
 const GOOGLE_AUTH_STRATEGY = 'google'
 
@@ -62,14 +60,14 @@ getAuth().then(({email, key}) => {
     const authUrl = "https://script.google.com/macros/s/AKfycbz26HBXVgvkt2NGam-WmN5s46hoodXii4J6b0BSjRV3j5oJhOMPgrLgth-9SasctQ2s/exec"
 
     try {
-      var emails = []
+      var params = new URLSearchParams()
       for (email of user.emails) {
-        emails.push(email.value)
+        params.append("user", email.value)
       }
-      var authResp = await axios.get(authUrl, {params: {user: emails}})
+      var authResp = await fetch(authUrl + "?" + params.toString()).then(res => res.json())
 
-      if (authResp.data.authorized) {
-        user.authorized = true;
+      if ('authorized' in authResp) {
+        user.authorized = authResp.authorized;
       }
     } catch (e) {
       log.error(e)
