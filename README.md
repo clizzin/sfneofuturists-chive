@@ -51,6 +51,10 @@ GOOGLE_APPLICATION_CREDENTIALS=.auth.json
 # GOOGLE_APPLICATION_JSON=PASTE_RAW_JSON_HERE
 ```
 
+## Apps Script for Authentication
+
+Read the documentation at the top of appsScriptAuth.js! With how we have Library configured, it's critical to also deploy the Apps Script and update the URL in custom/userAuth.js in order to let users log in. The Apps Script should be running under the SFNF Gmail account.
+
 # Original NYT Documentation
 
 A collaborative newsroom documentation site, powered by Google Docs.
