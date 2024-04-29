@@ -40,9 +40,9 @@
 function doGet(e) {
   var authorized = false;
   if ('user' in e.parameters) {
-    authorized = isUserAuthorizedForChive([e.parameter['user']])
+    authorized = isUserAuthorizedForChive([e.parameter['user']]);
   } else if ('user[]' in e.parameters) {
-    authorized = isUserAuthorizedForChive(e.parameters['user[]'])
+    authorized = isUserAuthorizedForChive(e.parameters['user[]']);
   }
   return ContentService.createTextOutput(JSON.stringify({authorized: authorized})).setMimeType(ContentService.MimeType.JSON);
 }
@@ -50,14 +50,14 @@ function doGet(e) {
 // takes a list of email addresses, and determines whether any of them are authorized to access a
 // hard-coded Google Drive folder ID.
 function isUserAuthorizedForChive(userEmailList) {
-  var authList = getEmailsInDriveFolder("PUT_YOUR_DRIVE_FOLDER_ID_HERE")
-  var expandedAuthList = expandEmails(authList)
-  var normalizedAuthList = normalizeEmails(expandedAuthList)
+  var authList = getEmailsInDriveFolder("PUT_YOUR_DRIVE_FOLDER_ID_HERE");
+  var expandedAuthList = expandEmails(authList);
+  var normalizedAuthList = normalizeEmails(expandedAuthList);
 
-  var normalizedUserList = normalizeEmails(userEmailList)
+  var normalizedUserList = normalizeEmails(userEmailList);
   
   Logger.log(normalizedAuthList);
-  Logger.log(normalizedUserList)
+  Logger.log(normalizedUserList);
 
   var authorized = false;
   for (userEmail of normalizedUserList) {
@@ -73,13 +73,10 @@ function isUserAuthorizedForChive(userEmailList) {
 // note: account that script runs as must have editor access to the folder to get permissions with this API
 function getEmailsInDriveFolder(folderid) {
   var drive = DriveApp.getFolderById(folderid)
-  var emails = [];
-  for (let viewer of drive.getViewers()) {
-    emails.push(viewer.getEmail())
-  }
-  for (let editor of drive.getEditors()) {
-    emails.push(editor.getEmail())
-  }
+  var emails = [
+    ...drive.getViewers().map(viewer => viewer.getEmail()),
+    ...drive.getEditors().map(editor => editor.getEmail())
+  ];
   return emails;
 }
 
@@ -88,15 +85,11 @@ function getEmailsInDriveFolder(folderid) {
 function getEmailsInGoogleGroup(grouphandle) {
   try {
     var group = GroupsApp.getGroupByEmail(grouphandle);
-    var emails = [];
-    var users = group.getUsers();
-    for (let user of users) {
-      emails.push(user.getEmail())
-    }
+    var emails = group.getUsers().map(user => user.getEmail());
     return emails;
   } catch (e) {
     // just in case GroupsApp call fails
-    Logger.log(e)
+    Logger.log(e);
     return [];
   }
 }
@@ -105,62 +98,62 @@ function getEmailsInGoogleGroup(grouphandle) {
 // do this in a single loop; this means that if there are ever recursive groups, they will not be expanded
 // [just don't make recursive groups please]
 function expandEmails(emails) {
-  var output = []
+  var output = [];
   for (let email of emails) {
-    [user, domain] = email.split("@")
-    domain = domain.toLowerCase()
+    [user, domain] = email.split("@");
+    domain = domain.toLowerCase();
     if (domain == "googlegroups.com") {
       // group handle, expand
-      groupEmails = getEmailsInGoogleGroup(email)
-      output = [...output, ...groupEmails]
+      groupEmails = getEmailsInGoogleGroup(email);
+      output = [...output, ...groupEmails];
     } else {
       // normal address
-      output.push(email)
+      output.push(email);
     }
   }
-  return output
+  return output;
 }
 
 // lower-case all addresses and strip dots from gmail usernames
 function normalizeEmails(emails) {
-  var output = []
+  var output = [];
   for (let email of emails) {
-    [user, domain] = email.toLowerCase().split("@")
+    [user, domain] = email.toLowerCase().split("@");
   
     // gmail is agnostic to dots, so strip them from both authorized emails and user emails
     // NB: gmail also allows people to do username+customstring@gmail.com, but let's not handle that
     if (domain == "gmail.com") {
-      user = user.replace( /\./g, "" )
+      user = user.replace( /\./g, "" );
     }
     
-    email = user + "@" + domain
+    email = user + "@" + domain;
   
-    output.push(email)
+    output.push(email);
   }
   return output
 }
 
 function oneOffTest() {
   // one off test for rapid experimentation; hopefully logs `true`
-  var result = isUserAuthorizedForChive(["testUser@gmail.com"])
-  Logger.log(result)
+  var result = isUserAuthorizedForChive(["testUser@gmail.com"]);
+  Logger.log(result);
 }
 
 // I don't feel like figuring out how to import real unit test frameworks into Apps Script...
 function testEmails(emails, expectedResult) {
-  var result = isUserAuthorizedForChive(emails)
+  var result = isUserAuthorizedForChive(emails);
   if (result != expectedResult) {
-    console.log("FAILURE (expected " + expectedResult + ", got " + result + "): " + emails)
+    console.log("FAILURE (expected " + expectedResult + ", got " + result + "): " + emails);
   }
   // Avoid slamming APIs (it rate limits you if you reduce this)
-  Utilities.sleep(2000)
+  Utilities.sleep(2000);
 }
 
 // add test cases here depending on your use case
 function runUnitTests() {
-  testEmails(["testUser@gmail.com"], true)
-  testEmails(["testuser@gmail.com"], true)
-  testEmails(["test.User@gmail.com"], true)
-  testEmails(["unauthorizedEmail@gmail.com"], false)
-  testEmails(["unauthorizedEmail@gmail.com", "testUser@gmail.com"], true)
+  testEmails(["testUser@gmail.com"], true);
+  testEmails(["testuser@gmail.com"], true);
+  testEmails(["test.User@gmail.com"], true);
+  testEmails(["unauthorizedEmail@gmail.com"], false);
+  testEmails(["unauthorizedEmail@gmail.com", "testUser@gmail.com"], true);
 }

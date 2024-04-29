@@ -57,14 +57,13 @@ getAuth().then(({email, key}) => {
     user.authorized = false;
 
     // magic Google Apps Script; takes a "user" parameter in a GET request and returns a JSON object with an "authorized" key
-    const authUrl = "https://script.google.com/macros/s/AKfycbz26HBXVgvkt2NGam-WmN5s46hoodXii4J6b0BSjRV3j5oJhOMPgrLgth-9SasctQ2s/exec"
+    const authUrl = new URL("https://script.google.com/macros/s/AKfycbwiUAnS6CaOLWwLfO_hZgg3A3l1LYrlKhgwsVK_9nunS8w4X6g8wLlylNyYIPmqKl4u/exec")
 
     try {
-      var params = new URLSearchParams()
       for (email of user.emails) {
-        params.append("user", email.value)
+        authUrl.searchParams.append("user", email.value)
       }
-      var authResp = await fetch(authUrl + "?" + params.toString()).then(res => res.json())
+      var authResp = await fetch(authUrl).then(res => res.json())
 
       if ('authorized' in authResp) {
         user.authorized = authResp.authorized;
