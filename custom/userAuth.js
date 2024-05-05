@@ -12,7 +12,6 @@ const {getAuth} = require('../server/auth')
 const log = require('../server/logger')
 
 const router = require('express-promise-router')()
-const domains = new Set(process.env.APPROVED_DOMAINS.split(/,\s?/g))
 
 const callbackURL = process.env.REDIRECT_URL || '/auth/redirect'
 const GOOGLE_AUTH_STRATEGY = 'google'
@@ -50,7 +49,39 @@ getAuth().then(({email, key}) => {
 
   // seralize/deseralization methods for extracting user information from the
   // session cookie and adding it to the req.passport object
-  passport.serializeUser((user, done) => done(null, user))
+
+  // serialize is called when the user first authenticates
+  // Use this callback as an opportunity to check their email against the chive permissions list
+  // and attach an "authorized" flag to their PassportJS object
+  passport.serializeUser(async (user, done) => {
+    user.authorized = false;
+
+    // magic Google Apps Script; takes a "user" parameter in a GET request and returns a JSON object with an "authorized" key
+    const authUrl = new URL("https://script.google.com/macros/s/AKfycbwiUAnS6CaOLWwLfO_hZgg3A3l1LYrlKhgwsVK_9nunS8w4X6g8wLlylNyYIPmqKl4u/exec")
+
+    try {
+      for (email of user.emails) {
+        authUrl.searchParams.append("user", email.value)
+      }
+      var authResp = await fetch(authUrl).then(res => res.json())
+
+      if ('authorized' in authResp) {
+        user.authorized = authResp.authorized;
+      }
+    } catch (e) {
+      log.error(e)
+    }
+
+    // save the user object and finish serializing it
+    done(null, user)
+  })
+
+  // deserialize is called anytime the user loads a new page; no need to re-check authorization
+  // Pitfall #1: If user is added to permissions list *after* they first log in, they will need to re-log-in
+  //             by visiting /login or /logout
+  // Pitfall #2: Removing a user from the GDrive permissions list will not revoke access to this site, unless
+  //             the session secret is changed (globally invalidating all user sessions)
+  // TODO: store login timestamp and force re-auth after X days so that access can be revoked
   passport.deserializeUser((obj, done) => done(null, obj))
 
   const googleLoginOptions = {
@@ -90,15 +121,7 @@ getAuth().then(({email, key}) => {
   })
 
   function isAuthorized(user) {
-    const [{value: userEmail = ''} = {}] = user.emails || []
-    const [userDomain] = userEmail.split('@').slice(-1)
-    const checkRegexEmail = () => {
-      const domainsArray = Array.from(domains)
-      for (const domain of domainsArray) {
-        if (userDomain.match(domain)) return true
-      }
-    }
-    return domains.has(userDomain) || domains.has(userEmail) || checkRegexEmail()
+    return user.authorized
   }
 
   function setUserInfo(req) {
